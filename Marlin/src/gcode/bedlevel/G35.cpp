@@ -40,6 +40,10 @@
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)
 #include "../../core/debug_out.h"
 
+#if ENABLED(RTS_AVAILABLE)
+  #include "../../lcd/e3v2/creality/LCD_RTS.h"
+#endif
+
 //
 // Define tramming point names.
 //
@@ -134,21 +138,42 @@ void GcodeSuite::G35() {
     const float threads_factor[] = { 0.5, 0.7, 0.8 };
 
     // Calculate adjusts
-    LOOP_S_L_N(i, 1, G35_PROBE_COUNT) {
+    LOOP_S_L_N(i, 0, G35_PROBE_COUNT) {
       const float diff = z_measured[0] - z_measured[i],
                   adjust = ABS(diff) < 0.001f ? 0 : diff / threads_factor[(screw_thread - 30) / 10];
 
       const int full_turns = trunc(adjust);
       const float decimal_part = adjust - float(full_turns);
       const int minutes = trunc(decimal_part * 60.0f);
+      char turns[4];
+      char mins[4];
+      itoa(ABS(full_turns), turns, 10);
+      itoa(ABS(minutes), mins, 10);
+
+      char str[24];
+      strcpy(str, (screw_thread & 1) == (adjust > 0) ? "CCW " : "CW ");
+      strcat(str, turns);
+      strcat(str, " turns  & ");
+      strcat(str, mins);
+      strcat(str, " mins");
+
 
       SERIAL_ECHOPGM("Turn ");
       SERIAL_ECHOPGM_P((char *)pgm_read_ptr(&tramming_point_name[i]));
-      SERIAL_ECHOPGM(" ", (screw_thread & 1) == (adjust > 0) ? "CCW" : "CW", " by ", ABS(full_turns), " turns");
-      if (minutes) SERIAL_ECHOPGM(" and ", ABS(minutes), " minutes");
-      if (ENABLED(REPORT_TRAMMING_MM)) SERIAL_ECHOPGM(" (", -diff, "mm)");
+      SERIAL_ECHOPGM(" ", str);
       SERIAL_EOL();
+
+      #if ENABLED(RTS_AVAILABLE)
+        unsigned long addr = AUTO_TRAM_1TEXT_VP + i * 24;
+        for(int j = 0; j < 24; j++)
+        {
+          rtscheck.RTS_SndData(0, addr + j);
+        }
+        rtscheck.RTS_SndData(str, addr);
+      #endif
     }
+
+    rtscheck.RTS_SndData(ExchangePageBase + 57, ExchangepageAddr);
   }
   else
     SERIAL_ECHOLNPGM("G35 aborted.");

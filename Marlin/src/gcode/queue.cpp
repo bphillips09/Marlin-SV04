@@ -37,6 +37,10 @@ GCodeQueue queue;
 #include "../MarlinCore.h"
 #include "../core/bug_on.h"
 
+#if ENABLED(RTS_AVAILABLE)
+  #include "../lcd/e3v2/creality/LCD_RTS.h"
+#endif
+
 #if ENABLED(PRINTER_EVENT_LEDS)
   #include "../feature/leds/printer_event_leds.h"
 #endif
@@ -593,6 +597,25 @@ void GCodeQueue::get_serial_commands() {
       }
       else
         process_stream_char(sd_char, sd_input_state, command.buffer, sd_count);
+
+      #if ENABLED(RTS_AVAILABLE)
+        // the printing results
+        if (card_eof)
+        {
+          rtscheck.RTS_SndData(100, PRINT_PROCESS_VP);
+          delay(1);
+          rtscheck.RTS_SndData(100, PRINT_PROCESS_ICON_VP);
+          delay(1);
+          rtscheck.RTS_SndData(0, PRINT_SURPLUS_TIME_HOUR_VP);
+          delay(1);
+          rtscheck.RTS_SndData(0, PRINT_SURPLUS_TIME_MIN_VP);
+          delay(1);  
+          rtscheck.RTS_SndData(ExchangePageBase + 9, ExchangepageAddr);
+          
+          card.fileHasFinished();         // Handle end of file reached
+        }
+      #endif
+
     }
   }
 

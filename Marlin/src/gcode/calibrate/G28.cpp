@@ -58,6 +58,8 @@
   #include "../../lcd/e3v2/creality/dwin.h"
 #elif ENABLED(DWIN_LCD_PROUI)
   #include "../../lcd/e3v2/proui/dwin.h"
+#elif ENABLED(RTS_AVAILABLE)
+  #include "../../lcd/e3v2/creality/LCD_RTS.h"
 #endif
 
 #if ENABLED(LASER_FEATURE)
@@ -132,6 +134,11 @@
     #endif
 
     destination.set(okay_homing_xy, current_position.z);
+
+    #if ENABLED(DUAL_X_CARRIAGE)
+      current_position_x1_axis = X2_MAX_POS;
+      current_position_x0_axis = X_MIN_POS;
+    #endif
 
     TERN_(HOMING_Z_WITH_PROBE, destination -= probe.offset_xy);
 
@@ -531,6 +538,10 @@ void GcodeSuite::G28() {
       set_duplication_enabled(IDEX_saved_duplication_state);
 
       TERN_(IMPROVE_HOMING_RELIABILITY, end_slow_homing(saved_motion_state));
+    } else if ((save_dual_x_carriage_mode == 4) && card.isPrinting()) {
+      // Home the 1st (left) extruder
+      active_extruder = 0;
+      homeaxis(X_AXIS);
     }
 
   #endif // DUAL_X_CARRIAGE
@@ -594,7 +605,7 @@ void GcodeSuite::G28() {
 
   ui.refresh();
 
-  TERN_(HAS_DWIN_E3V2_BASIC, DWIN_HomingDone());
+  TERN_(RTS_AVAILABLE, RTS_MoveAxisHoming());
   TERN_(EXTENSIBLE_UI, ExtUI::onHomingDone());
 
   report_current_position();

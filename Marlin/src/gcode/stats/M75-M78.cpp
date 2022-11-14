@@ -29,6 +29,10 @@
 
 #include "../../MarlinCore.h" // for startOrResumeJob
 
+#if ENABLED(RTS_AVAILABLE)
+  #include "../../lcd/e3v2/creality/LCD_RTS.h"
+#endif
+
 #if ENABLED(DWIN_LCD_PROUI)
   #include "../../lcd/e3v2/proui/dwin.h"
 #endif
@@ -59,6 +63,10 @@ void GcodeSuite::M76() {
 void GcodeSuite::M77() {
   print_job_timer.stop();
   TERN_(DWIN_LCD_PROUI, DWIN_Print_Finished());
+
+  #if ENABLED(RTS_AVAILABLE)
+    rtscheck.RTS_SndData(ExchangePageBase + 9, ExchangepageAddr);
+  #endif
 }
 
 #if ENABLED(PRINTCOUNTER)

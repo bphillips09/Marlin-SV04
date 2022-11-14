@@ -27,15 +27,15 @@
 
 #include "env_validate.h"
 
-#if HAS_MULTI_HOTEND || E_STEPPERS > 1
-  #error "Creality v4 only supports 1 hotend / E stepper."
+#if E_STEPPERS > 2
+  #error "Creality v4 only supports 2 hotend / E stepper."
 #endif
 
 #ifndef BOARD_INFO_NAME
   #define BOARD_INFO_NAME      "Creality V4"
 #endif
 #ifndef DEFAULT_MACHINE_NAME
-  #define DEFAULT_MACHINE_NAME "Ender 3 V2"
+  #define DEFAULT_MACHINE_NAME "Creality V5.2.1"
 #endif
 
 #define BOARD_NO_NATIVE_USB
@@ -51,115 +51,137 @@
 // EEPROM
 //
 #if NO_EEPROM_SELECTED
-  #define IIC_BL24CXX_EEPROM                      // EEPROM on I2C-0
-  //#define SDCARD_EEPROM_EMULATION
-#endif
-
-#if ENABLED(IIC_BL24CXX_EEPROM)
-  #define IIC_EEPROM_SDA                    PA11
-  #define IIC_EEPROM_SCL                    PA12
-  #define MARLIN_EEPROM_SIZE               0x800  // 2K (24C16)
-#elif ENABLED(SDCARD_EEPROM_EMULATION)
-  #define MARLIN_EEPROM_SIZE               0x800  // 2K
+  // I2C
+  #define IIC_BL24CXX_EEPROM                      // EEPROM on I2C-0 used only for display settings
+  #if ENABLED(IIC_BL24CXX_EEPROM)
+    #define IIC_EEPROM_SDA       PC2
+    #define IIC_EEPROM_SCL       PC3
+    #define MARLIN_EEPROM_SIZE             0x800  // 2Kb (24C16)
+  #else
+    #define SDCARD_EEPROM_EMULATION               // SD EEPROM until all EEPROM is BL24CXX
+    #define MARLIN_EEPROM_SIZE             0x800  // 2Kb
+  #endif
 #endif
 
 //
 // Servos
 //
-#ifndef SERVO0_PIN
-  #ifndef HAS_PIN_27_BOARD
-    #define SERVO0_PIN                      PB0   // BLTouch OUT
-  #else
-    #define SERVO0_PIN                      PC6
-  #endif
+#ifdef BLTOUCH
+  #define SERVO0_PIN       PD13  // BLTouch OUT
+  #define Z_MIN_PIN        PD12
+#else
+  #define Z_MIN_PIN        PE1
 #endif
 
 //
 // Limit Switches
 //
-#ifndef X_STOP_PIN
-  #define X_STOP_PIN                        PA5
-#endif
-#ifndef Y_STOP_PIN
-  #define Y_STOP_PIN                        PA6
-#endif
-#ifndef Z_STOP_PIN
-  #define Z_STOP_PIN                        PA7
-#endif
-
-#ifndef Z_MIN_PROBE_PIN
-  #define Z_MIN_PROBE_PIN                   PB1   // BLTouch IN
-#endif
+#define X_MIN_PIN          PD10
+#define X_MAX_PIN          PE15
+#define Y_MIN_PIN          PE0
+#define Z2_MIN_PIN         PE2
 
 //
 // Filament Runout Sensor
 //
 #ifndef FIL_RUNOUT_PIN
-  #define FIL_RUNOUT_PIN                    PA4   // "Pulled-high"
+  #define FIL_RUNOUT_PIN                  PE5
+  #define FIL_RUNOUT2_PIN                 PE6
 #endif
+
+//#define CHECKFILEMENT0_PIN                PE5
+//#define CHECKFILEMENT1_PIN                PE6
 
 //
 // Steppers
 //
+#define X_ENABLE_PIN                        PC7
 #ifndef X_STEP_PIN
-  #define X_STEP_PIN                        PC2
+  #define X_STEP_PIN                        PD15
 #endif
 #ifndef X_DIR_PIN
-  #define X_DIR_PIN                         PB9
+  #define X_DIR_PIN                         PD14
 #endif
-#define X_ENABLE_PIN                        PC3   // Shared
 
+#define X2_ENABLE_PIN                       PE11
+#ifndef X2_STEP_PIN
+  #define X2_STEP_PIN                       PE9
+#endif
+#ifndef X2_DIR_PIN
+  #define X2_DIR_PIN                        PE8
+#endif
+
+#define Y_ENABLE_PIN                        PB9
 #ifndef Y_STEP_PIN
-  #define Y_STEP_PIN                        PB8
+  #define Y_STEP_PIN                        PB7
 #endif
 #ifndef Y_DIR_PIN
-  #define Y_DIR_PIN                         PB7
+  #define Y_DIR_PIN                         PB6
 #endif
-#define Y_ENABLE_PIN                X_ENABLE_PIN
 
+#define Z_ENABLE_PIN                        PB5
 #ifndef Z_STEP_PIN
-  #define Z_STEP_PIN                        PB6
+  #define Z_STEP_PIN                        PB3
 #endif
 #ifndef Z_DIR_PIN
-  #define Z_DIR_PIN                         PB5
+  #define Z_DIR_PIN                         PD7
 #endif
-#define Z_ENABLE_PIN                X_ENABLE_PIN
 
+#define Z2_ENABLE_PIN                       PC5
+#ifndef Z2_STEP_PIN
+  #define Z2_STEP_PIN                       PA7
+#endif
+#ifndef Z2_DIR_PIN
+  #define Z2_DIR_PIN                        PA6
+#endif
+
+#define E0_ENABLE_PIN                       PD4
 #ifndef E0_STEP_PIN
-  #define E0_STEP_PIN                       PB4
+  #define E0_STEP_PIN                       PD1
 #endif
 #ifndef E0_DIR_PIN
-  #define E0_DIR_PIN                        PB3
+  #define E0_DIR_PIN                        PD0
 #endif
-#define E0_ENABLE_PIN               X_ENABLE_PIN
+
+#define E1_ENABLE_PIN                       PE7
+#ifndef E1_STEP_PIN
+  #define E1_STEP_PIN                       PB1
+#endif
+#ifndef E1_DIR_PIN
+  #define E1_DIR_PIN                        PB0
+#endif
 
 //
 // Temperature Sensors
 //
-#define TEMP_0_PIN                          PC5   // TH1
-#define TEMP_BED_PIN                        PC4   // TB1
+#define TEMP_0_PIN                          PA4   // TH0
+#define TEMP_1_PIN                          PA5   // TH1
+#define TEMP_BED_PIN                        PA3   // TB1
 
 //
 // Heaters / Fans
 //
-#ifndef HEATER_0_PIN
-  #define HEATER_0_PIN                      PA1   // HEATER1
-#endif
-#ifndef HEATER_BED_PIN
-  #define HEATER_BED_PIN                    PA2   // HOT BED
-#endif
-#ifndef FAN_PIN
-  #define FAN_PIN                           PA0   // FAN
-#endif
-#define FAN_SOFT_PWM_REQUIRED
+#define HEATER_0_PIN                        PA1   // HEATER0
+#define HEATER_1_PIN                        PA0   // HEATER1
+#define HEATER_BED_PIN                      PA2   // HOT BED
+
+#define FAN_PIN                             PB14   // FAN
+#define FAN1_PIN                            PB12   // FAN
+#define FAN_SOFT_PWM
 
 //
 // SD Card
 //
-#define SD_DETECT_PIN                       PC7
-#define SDCARD_CONNECTION ONBOARD
+#define SD_DETECT_PIN                       PA8
+#define SDCARD_CONNECTION                ONBOARD
+#define ONBOARD_SPI_DEVICE                     1
+#define ONBOARD_SD_CS_PIN                   PC11   // SDSS
 #define SDIO_SUPPORT
-#define NO_SD_HOST_DRIVE                          // This board's SD is only seen by the printer
+#define NO_SD_HOST_DRIVE                           // This board's SD is only seen by the printer
+
+#if ENABLED(CR10_STOCKDISPLAY) && NONE(RET6_12864_LCD, VET6_12864_LCD)
+  #error "Define RET6_12864_LCD or VET6_12864_LCD to select pins for CR10_STOCKDISPLAY with the Creality V4 controller."
+#endif
 
 #if ANY(RET6_12864_LCD, HAS_DWIN_E3V2, IS_DWIN_MARLINUI)
 

@@ -41,6 +41,10 @@
   #endif
 #endif
 
+#if ENABLED(RTS_AVAILABLE)
+  #include "../../../lcd/e3v2/creality/LCD_RTS.h"
+#endif
+
 #if ENABLED(MIXING_EXTRUDER)
   #include "../../../feature/mixing.h"
 #endif
@@ -173,6 +177,7 @@ void GcodeSuite::M600() {
     // Restore toolhead if it was changed
     if (active_extruder_before_filament_change != active_extruder)
       tool_change(active_extruder_before_filament_change);
+      SERIAL_ECHOLNPGM("MSG: tool_change:", target_extruder);
   #endif
 
   TERN_(MIXING_EXTRUDER, mixer.T(old_mixing_tool)); // Restore original mixing tool

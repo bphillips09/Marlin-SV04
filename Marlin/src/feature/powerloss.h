@@ -115,6 +115,9 @@ typedef struct {
   // Relative axis modes
   uint8_t axis_relative;
 
+  // recovery flag
+  uint8_t recovery_flag;
+
   // Misc. Marlin flags
   struct {
     bool raised:1;                // Raised before saved

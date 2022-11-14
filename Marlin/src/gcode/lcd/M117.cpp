@@ -27,11 +27,31 @@
 #include "../gcode.h"
 #include "../../lcd/marlinui.h"
 
+#if ENABLED(RTS_AVAILABLE)
+  #include "../../lcd/e3v2/creality/LCD_RTS.h"
+#endif
+
 /**
  * M117: Set LCD Status Message
  */
 void GcodeSuite::M117() {
-
+  #if ENABLED(RTS_AVAILABLE)
+    if (parser.string_arg && parser.string_arg[0]) {
+      for(int j = 0;j < 20;j ++)
+      {
+        // clean print file
+        rtscheck.RTS_SndData(0, PRINT_FILE_TEXT_VP + j);
+      }
+      rtscheck.RTS_SndData(parser.string_arg, PRINT_FILE_TEXT_VP);
+    }
+    else
+      for(int j = 0;j < 20;j ++)
+      {
+        // clean print file
+        rtscheck.RTS_SndData(0, PRINT_FILE_TEXT_VP + j);
+      }
+  #endif
+      
   if (parser.string_arg && parser.string_arg[0])
     ui.set_status(parser.string_arg, true);
   else

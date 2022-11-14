@@ -28,9 +28,14 @@
 #include "../../lcd/marlinui.h"
 #include "../../sd/cardreader.h"
 #include "../../libs/numtostr.h"
+#include "../../module/printcounter.h"
 
 #if ENABLED(DWIN_LCD_PROUI)
   #include "../../lcd/e3v2/proui/dwin.h"
+#endif
+
+#if ENABLED(RTS_AVAILABLE)
+  #include "../../lcd/e3v2/creality/LCD_RTS.h"
 #endif
 
 #if ENABLED(M73_REPORT)
@@ -54,6 +59,9 @@
  */
 void GcodeSuite::M73() {
 
+  uint16_t remaining_time = 0;
+  uint16_t remaining_percent = 0;
+
   #if ENABLED(DWIN_LCD_PROUI)
 
     DWIN_M73();
@@ -61,15 +69,34 @@ void GcodeSuite::M73() {
   #else
 
     #if ENABLED(SET_PROGRESS_PERCENT)
-      if (parser.seenval('P'))
+      if (parser.seenval('P')) {
         ui.set_progress((PROGRESS_SCALE) > 1
           ? parser.value_float() * (PROGRESS_SCALE)
           : parser.value_byte()
         );
+
+        remaining_percent = (unsigned char)((PROGRESS_SCALE) > 1
+          ? parser.value_float() * (PROGRESS_SCALE)
+          : parser.value_byte()
+        );
+
+        rtscheck.RTS_SndData(remaining_percent, PRINT_PROCESS_VP);
+        rtscheck.RTS_SndData(remaining_percent, PRINT_PROCESS_ICON_VP);
+
+        duration_t elapsed = print_job_timer.duration();
+        rtscheck.RTS_SndData(elapsed.value / 3600, PRINT_TIME_HOUR_VP);
+        rtscheck.RTS_SndData((elapsed.value % 3600) / 60, PRINT_TIME_MIN_VP);
+      }
     #endif
 
     #if ENABLED(SET_REMAINING_TIME)
-      if (parser.seenval('R')) ui.set_remaining_time(60 * parser.value_ulong());
+      if (parser.seenval('R')) {
+        remaining_time = 60 * parser.value_ulong();
+      
+        ui.set_remaining_time(remaining_time);
+        rtscheck.RTS_SndData(remaining_time / 3600, PRINT_SURPLUS_TIME_HOUR_VP);
+        rtscheck.RTS_SndData((remaining_time % 3600) / 60, PRINT_SURPLUS_TIME_MIN_VP);
+      }
     #endif
 
     #if ENABLED(SET_INTERACTION_TIME)

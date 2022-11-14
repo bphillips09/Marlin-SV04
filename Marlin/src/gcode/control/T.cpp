@@ -22,6 +22,7 @@
 
 #include "../gcode.h"
 #include "../../module/tool_change.h"
+#include "../../MarlinCore.h"
 
 #if EITHER(HAS_MULTI_EXTRUDER, DEBUG_LEVELING_FEATURE)
   #include "../../module/motion.h"
@@ -67,4 +68,6 @@ void GcodeSuite::T(const int8_t tool_index) {
       || parser.boolval('S')
     #endif
   );
+
+  active_extruder_font = parser.boolval('S');
 }

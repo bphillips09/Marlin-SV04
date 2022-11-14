@@ -37,6 +37,10 @@
   #include "../../feature/bedlevel/bedlevel.h"
 #endif
 
+#if ENABLED(RTS_AVAILABLE)
+  #include "../../lcd/e3v2/creality/LCD_RTS.h"
+#endif
+
 #if HAS_MULTI_HOTEND
   #include "../../module/tool_change.h"
 #endif
@@ -439,7 +443,16 @@ void GcodeSuite::G34() {
         // After this operation the z position needs correction
         set_axis_never_homed(Z_AXIS);
         // Home Z after the alignment procedure
-        process_subcommands_now(F("G28Z"));
+        if(!card.isPrinting())
+        {
+          process_subcommands_now(F("G28 Z"));
+          process_subcommands_now(F("G28 X"));
+          rtscheck.RTS_SndData(ExchangePageBase + 22, ExchangepageAddr);
+        }
+        else
+        {
+          process_subcommands_now(F("G28"));
+        }
       #else
         // Use the probed height from the last iteration to determine the Z height.
         // z_measured_min is used, because all steppers are aligned to z_measured_min.

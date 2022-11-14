@@ -54,6 +54,10 @@ uint32_t PrintJobRecovery::cmd_sdpos, // = 0
 #include "../module/temperature.h"
 #include "../core/serial.h"
 
+#if ENABLED(RTS_AVAILABLE)
+  #include "../lcd/e3v2/creality/LCD_RTS.h"
+#endif
+
 #if HOMING_Z_WITH_PROBE
   #include "../module/probe.h"
 #endif
@@ -238,7 +242,7 @@ void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=POW
     // Misc. Marlin flags
     info.flag.dryrun = !!(marlin_debug_flags & MARLIN_DEBUG_DRYRUN);
     info.flag.allow_cold_extrusion = TERN0(PREVENT_COLD_EXTRUSION, thermalManager.allow_cold_extrude);
-
+    info.recovery_flag = PoweroffContinue;
     write();
   }
 }
@@ -497,6 +501,12 @@ void PrintJobRecovery::resume() {
     }
   #endif
 
+  if((dualXPrintingModeStatus == 0) || (dualXPrintingModeStatus == 4)) 
+  {
+      sprintf_P(cmd, PSTR("T%i"), info.active_extruder);
+      gcode.process_subcommands_now(cmd);
+  }
+
   // Restore the previously active tool (with no_move)
   #if HAS_MULTI_EXTRUDER || HAS_MULTI_HOTEND
     sprintf_P(cmd, PSTR("T%i S"), info.active_extruder);
@@ -542,6 +552,46 @@ void PrintJobRecovery::resume() {
 
   #if ENABLED(NOZZLE_CLEAN_FEATURE)
     gcode.process_subcommands_now(F("G12"));
+  #endif
+
+  #if ENABLED(DUAL_X_CARRIAGE)
+    if(save_dual_x_carriage_mode == 2)
+    {
+      dualXPrintingModeStatus = save_dual_x_carriage_mode;
+    }
+    else if(save_dual_x_carriage_mode == 3)
+    {
+      dualXPrintingModeStatus = save_dual_x_carriage_mode;
+    }
+    else if(save_dual_x_carriage_mode == 1)
+    {
+      dualXPrintingModeStatus = save_dual_x_carriage_mode;
+    }
+    else if(save_dual_x_carriage_mode == 0)
+    {
+      dualXPrintingModeStatus = save_dual_x_carriage_mode;
+    }
+    else if(save_dual_x_carriage_mode == 4)
+    {
+      dualXPrintingModeStatus = save_dual_x_carriage_mode;
+    }
+    else
+    {
+      dualXPrintingModeStatus = 0;
+    }
+
+    gcode.process_subcommands_now_P(PSTR("G1 E3 F3000"));
+
+    save_dual_x_carriage_mode = dualXPrintingModeStatus;
+    if(save_dual_x_carriage_mode == 1)
+    {
+      gcode.process_subcommands_now_P(PSTR("M605 S1"));
+      if(info.active_extruder == 0)
+      {
+        sprintf_P(cmd, PSTR("T%i"), info.active_extruder);
+        gcode.process_subcommands_now(cmd);
+      }
+    }
   #endif
 
   // Move back over to the saved XY
