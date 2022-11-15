@@ -22,6 +22,7 @@
 #pragma once
 
 #include "../../../inc/MarlinConfigPre.h"
+#include "../bedlevel.h"
 
 class LevelingBilinear {
 public:

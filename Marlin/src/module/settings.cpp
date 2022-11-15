@@ -68,6 +68,10 @@
   #endif
 #endif
 
+#if ENABLED(RTS_AVAILABLE)
+  #include "../lcd/e3v2/creality/LCD_RTS.h"
+#endif
+
 #if ENABLED(Z_STEPPER_AUTO_ALIGN)
   #include "../feature/z_stepper_align.h"
 #endif
@@ -1534,6 +1538,9 @@ void MarlinSettings::postprocess() {
     }
     #endif
 
+    EEPROM_WRITE(dualXPrintingModeStatus);
+    EEPROM_WRITE(active_extruder_font);
+
     //
     // Case Light Brightness
     //
@@ -2588,6 +2595,18 @@ void MarlinSettings::postprocess() {
         ui.set_language(ui_language);
       }
       #endif
+
+      if((dualXPrintingModeStatus != 0) && (dualXPrintingModeStatus != 1) && (dualXPrintingModeStatus != 2) && (dualXPrintingModeStatus != 3) && (dualXPrintingModeStatus != 4))
+      {
+        dualXPrintingModeStatus = 0;
+      }
+      EEPROM_READ(dualXPrintingModeStatus);
+
+      if((active_extruder_font != 0) && (active_extruder_font != 1))
+      {
+        active_extruder_font = 0;
+      }
+      EEPROM_READ(active_extruder_font);
 
       //
       // Model predictive control
@@ -3696,6 +3715,14 @@ void MarlinSettings::reset() {
       CONFIG_ECHO_START(); SERIAL_ECHO_SP(2); gcode.M553_report();
       CONFIG_ECHO_START(); SERIAL_ECHO_SP(2); gcode.M554_report();
     #endif
+
+    CONFIG_ECHO_HEADING("0:Single 1:Two-color 2:Copy 3:Mirror Dual X Printing Mode Status:");
+    CONFIG_ECHO_START();
+    SERIAL_ERROR_MSG("  M605 S", int(dualXPrintingModeStatus));
+
+    CONFIG_ECHO_HEADING("0:extruder0 1:extruder1 active extruder font:");
+    CONFIG_ECHO_START();
+    SERIAL_ERROR_MSG("  T", int(active_extruder_font));
 
     TERN_(HAS_MULTI_LANGUAGE, gcode.M414_report(forReplay));
 

@@ -58,6 +58,10 @@
   #include "../feature/tmc_util.h"
 #endif
 
+#if ENABLED(RTS_AVAILABLE)
+  #include "../lcd/e3v2/creality/LCD_RTS.h"
+#endif
+
 #if ENABLED(FWRETRACT)
   #include "../feature/fwretract.h"
 #endif
@@ -833,7 +837,7 @@ void restore_feedrate_and_scaling() {
         // In Dual X mode hotend_offset[X] is T1's home position
         const float dual_max_x = _MAX(hotend_offset[1].x, X2_MAX_POS);
 
-        if (new_tool_index != 0) {
+        if (new_tool_index != 0 && (save_dual_x_carriage_mode != 4) && (save_dual_x_carriage_mode != 1)) {
           // T1 can move from X2_MIN_POS to X2_MAX_POS or X2 home position (whichever is larger)
           soft_endstop.min.x = X2_MIN_POS;
           soft_endstop.max.x = dual_max_x;
@@ -843,6 +847,10 @@ void restore_feedrate_and_scaling() {
           // but not so far to the right that T1 would move past the end
           soft_endstop.min.x = X1_MIN_POS;
           soft_endstop.max.x = _MIN(X1_MAX_POS, dual_max_x - duplicate_extruder_x_offset);
+        }
+        else if ((save_dual_x_carriage_mode == 4) || (save_dual_x_carriage_mode == 1)) {
+          soft_endstop.min.x = 0;
+          soft_endstop.max.x = dual_max_x;
         }
         else {
           // In other modes, T0 can move from X1_MIN_POS to X1_MAX_POS

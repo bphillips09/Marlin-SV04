@@ -25,7 +25,7 @@
  * Release version. Leave the Marlin version or apply a custom scheme.
  */
 #ifndef SHORT_BUILD_VERSION
-  #define SHORT_BUILD_VERSION "bugfix-2.1.x"
+  #define SHORT_BUILD_VERSION "V2.1.B1"
 #endif
 
 /**
@@ -66,14 +66,14 @@
  * (Other behaviors are given by the firmware version and capabilities report.)
  */
 #ifndef PROTOCOL_VERSION
-  #define PROTOCOL_VERSION "1.0"
+  #define PROTOCOL_VERSION "V2.1.B1"
 #endif
 
 /**
  * Define a generic printer name to be output to the LCD after booting Marlin.
  */
 #ifndef MACHINE_NAME
-  #define MACHINE_NAME "3D Printer"
+  #define MACHINE_NAME "SV04"
 #endif
 
 /**
@@ -82,7 +82,7 @@
  * providing the source code to your customers.)
  */
 #ifndef SOURCE_CODE_URL
-  #define SOURCE_CODE_URL "github.com/MarlinFirmware/Marlin"
+  #define SOURCE_CODE_URL "https://github.com/bphillips09/Marlin-SV04"
 #endif
 
 /**
@@ -120,3 +120,4 @@
   #define USB_DEVICE_PRODUCT_NAME         MACHINE_NAME
 #endif
 #define USB_DEVICE_SERIAL_NAME            "123985739853"
+#define	CORP_WEBSITE_E	"sovol3d.com"

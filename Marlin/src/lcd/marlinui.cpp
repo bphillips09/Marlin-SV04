@@ -118,7 +118,7 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
   void MarlinUI::set_brightness(const uint8_t value) {
     backlight = !!value;
     if (backlight) brightness = constrain(value, LCD_BRIGHTNESS_MIN, LCD_BRIGHTNESS_MAX);
-    _set_brightness();
+    //_set_brightness();
   }
 #endif
 
@@ -206,7 +206,7 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 
 void MarlinUI::init() {
 
-  init_lcd();
+  //init_lcd();
 
   #if HAS_DIGITAL_BUTTONS
     #if BUTTON_EXISTS(EN1)
@@ -1787,7 +1787,7 @@ void MarlinUI::init() {
 
     reinit_lcd(); // Revive a noisy shared SPI LCD
 
-    refresh();
+    //refresh();
 
     #if HAS_WIRED_LCD || LED_POWEROFF_TIMEOUT > 0
       const millis_t ms = millis();

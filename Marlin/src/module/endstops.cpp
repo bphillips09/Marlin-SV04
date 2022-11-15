@@ -42,6 +42,10 @@
   #include "printcounter.h" // for print_job_timer
 #endif
 
+#if ENABLED(RTS_AVAILABLE)
+  #include "../lcd/e3v2/creality/LCD_RTS.h"
+#endif
+
 #if ENABLED(BLTOUCH)
   #include "../feature/bltouch.h"
 #endif
@@ -454,7 +458,11 @@ void Endstops::not_homing() {
   // If the last move failed to trigger an endstop, call kill
   void Endstops::validate_homing_move() {
     if (trigger_state()) hit_on_purpose();
-    else kill(GET_TEXT_F(MSG_KILL_HOMING_FAILED));
+    else 
+    { 
+      rtscheck.RTS_SndData(ExchangePageBase + 55, ExchangepageAddr);
+      kill(GET_TEXT_F(MSG_KILL_HOMING_FAILED));
+    }
   }
 #endif
 

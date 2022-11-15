@@ -594,6 +594,7 @@ void home_if_needed(const bool keeplev=false);
   extern bool idex_mirrored_mode;                   // Used in mode 3
 
   FORCE_INLINE bool idex_is_duplicating() { return dual_x_carriage_mode >= DXC_DUPLICATION_MODE; }
+  FORCE_INLINE bool dxc_is_parked() { return dual_x_carriage_mode >= DXC_AUTO_PARK_MODE; }
 
   float x_home_pos(const uint8_t extruder);
 

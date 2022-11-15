@@ -22,6 +22,7 @@
 #pragma once
 
 #include "../../inc/MarlinConfigPre.h"
+#include "../../lcd/e3v2/creality/LCD_RTS.h"
 
 #if EITHER(RESTORE_LEVELING_AFTER_G28, ENABLE_LEVELING_AFTER_G28)
   #define CAN_SET_LEVELING_AFTER_G28 1

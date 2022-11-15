@@ -53,6 +53,8 @@ enum MarlinState : uint8_t {
 };
 
 extern MarlinState marlin_state;
+extern uint8_t active_extruder_font;
+extern uint8_t dualXPrintingModeStatus;
 inline bool IsRunning() { return marlin_state >= MF_RUNNING; }
 inline bool IsStopped() { return marlin_state == MF_STOPPED; }
 
