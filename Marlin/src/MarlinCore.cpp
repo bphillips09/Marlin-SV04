@@ -1325,7 +1325,7 @@ void setup() {
   // UI must be initialized before EEPROM
   // (because EEPROM code calls the UI).
 
-  SETUP_RUN(ui.init());
+  //SETUP_RUN(ui.init());
   SETUP_RUN(RTSUpdate());
 
   #if PIN_EXISTS(SAFE_POWER)
