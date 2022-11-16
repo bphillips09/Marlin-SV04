@@ -731,12 +731,13 @@ void RTSSHOW::RTS_SDcard_Stop()
       card.removeJobRecoveryFile();
     #endif
   }
-  #ifdef EVENT_GCODE_SD_STOP
-    queue.inject_P(PSTR(EVENT_GCODE_SD_STOP));
+  
+  #ifdef EVENT_GCODE_SD_ABORT
+    queue.inject_P(PSTR(EVENT_GCODE_SD_ABORT));
   #endif
 
   // shut down the stepper motor.
-  // queue.enqueue_now_P(PSTR("M84"));
+  //queue.enqueue_now_P(PSTR("M84"));
   RTS_SndData(0, MOTOR_FREE_ICON_VP);
 
   RTS_SndData(0, PRINT_PROCESS_ICON_VP);
@@ -902,8 +903,8 @@ void RTSSHOW::RTS_HandleData()
         RTS_SDcard_Stop();
         Update_Time_Value = 0;
         PrintFlag = 0;
-        queue.enqueue_now_P(PSTR("M77"));
         TERN_(HOST_PAUSE_M76, hostui.cancel());
+        queue.enqueue_now_P(PSTR("M77"));
       }
       else if(recdat.data[0] == 0xF0)
       {

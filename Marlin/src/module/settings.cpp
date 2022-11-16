@@ -516,6 +516,12 @@ typedef struct SettingsDataStruct {
   #endif
 
   //
+  // SV04 DWIN
+  //
+  uint8_t dualXPrintingModeStatus;
+  uint8_t active_extruder_font;
+
+  //
   // CASELIGHT_USES_BRIGHTNESS
   //
   #if CASELIGHT_USES_BRIGHTNESS
