@@ -904,7 +904,7 @@ void RTSSHOW::RTS_HandleData()
         Update_Time_Value = 0;
         PrintFlag = 0;
         TERN_(HOST_PAUSE_M76, hostui.cancel());
-        queue.enqueue_now_P(PSTR("M77"));
+        queue.inject_P(PSTR("M77"));
       }
       else if(recdat.data[0] == 0xF0)
       {
@@ -940,7 +940,7 @@ void RTSSHOW::RTS_HandleData()
         sdcard_pause_check = false;
         PrintFlag = 1;
         change_page_number = 12;
-        queue.enqueue_now_P(PSTR("M76"));
+        queue.inject_P(PSTR("M76"));
       }
       break;
 
