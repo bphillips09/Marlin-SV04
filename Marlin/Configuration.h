@@ -91,7 +91,7 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_CREALITY_V4
+  #define MOTHERBOARD BOARD_CREALITY_V521
 #endif
 
 /**
@@ -165,7 +165,7 @@
 #define X_DRIVER_TYPE  A4988
 #define Y_DRIVER_TYPE  A4988
 #define Z_DRIVER_TYPE  A4988
-//#define X2_DRIVER_TYPE A4988
+#define X2_DRIVER_TYPE A4988
 //#define Y2_DRIVER_TYPE A4988
 #define Z2_DRIVER_TYPE A4988
 //#define Z3_DRIVER_TYPE A4988

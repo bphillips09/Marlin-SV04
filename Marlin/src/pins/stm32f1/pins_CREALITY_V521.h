@@ -67,14 +67,14 @@
 //
 // Limit Switches
 //
-#define X_STOP_PIN                          PD10  // X
-#define X2_STOP_PIN                         PE15  // X2
-#define Y_STOP_PIN                          PE0   // Y
-#define Z_STOP_PIN                          PE1   // Z
-#define Z2_STOP_PIN                         PE2   // Z2
+#define X_MIN_PIN                           PD10  // X
+#define X_MAX_PIN                           PE15  // X2
+#define Y_MIN_PIN                           PE0   // Y
+//#define Z_MIN_PIN                           PE1   // Z
+#define Z2_MIN_PIN                          PE2   // Z2
 
-#ifndef Z_MIN_PROBE_PIN
-  #define Z_MIN_PROBE_PIN                   PD12  // BLTouch IN
+#ifndef Z_MIN_PIN
+  #define Z_MIN_PIN                         PD12  // BLTouch IN
 #endif
 
 //
